@@ -10,13 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Chronometer;
+import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class MainActivity extends AppCompatActivity {
     RadioButton radioDate,radioTime;
-    CalendarView calendarl;
+    DatePicker datePick;
     TimePicker timePicker;
     Chronometer chrono;
     TextView textResult;
@@ -28,61 +29,65 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reservation);
         radioDate = findViewById(R.id.radion_date);
         radioTime = findViewById(R.id.radio_time);
-
+        datePick = findViewById(R.id.date_pick);
+        timePicker = findViewById(R.id.time_pick);
         radioDate.setOnClickListener(radiolistener);
         radioTime.setOnClickListener(radiolistener);
 
-        calendarl = findViewById(R.id.calendar1);
         timePicker = findViewById(R.id.time_pick);
         chrono = findViewById(R.id.chronol);
         textResult = findViewById(R.id.text_result);
-        Button btnStart = findViewById(R.id.btn_start);
-        Button btnDone = findViewById(R.id.btn_stop);
-        btnStart.setOnClickListener(btnListener);
-        btnDone.setOnClickListener(btnListener);
-        calendarl.setOnDateChangeListener(calendarListener);
+       chrono.setOnClickListener(chronoListener);
+       textResult.setOnLongClickListener(textListener);
+
+        radioDate.setVisibility(View.INVISIBLE);
+        radioTime.setVisibility(View.INVISIBLE);
+        timePicker.setVisibility(View.INVISIBLE);
+        datePick.setVisibility(View.INVISIBLE);
+
     }
     View.OnClickListener radiolistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.radion_date:
-                    calendarl.setVisibility(View.VISIBLE);
+                    datePick.setVisibility(View.VISIBLE);
                     timePicker.setVisibility(View.INVISIBLE);
                     break;
                 case R.id.radio_time:
-                    calendarl.setVisibility(View.INVISIBLE);
+                    datePick.setVisibility(View.INVISIBLE);
                     timePicker.setVisibility(View.VISIBLE);
                     break;
             }
         }
     };
 
-    View.OnClickListener btnListener = new View.OnClickListener() {
+    View.OnClickListener chronoListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.btn_start:
-                    chrono.setBase(SystemClock.elapsedRealtime());
-                    chrono.start();
-                    chrono.setTextColor(Color.RED);
-                    break;
-                case R.id.btn_stop:
-                    chrono.stop();
-                    chrono.setTextColor(Color.BLUE);
-                    textResult.setText(dateStr+ timePicker.getCurrentHour()+"시"+timePicker.getCurrentMinute()+"분");
-                    break;
+                chrono.setBase(SystemClock.elapsedRealtime());
+                chrono.start();
+                chrono.setTextColor(Color.RED);
+                radioDate.setVisibility(View.VISIBLE);
+                radioTime.setVisibility(View.VISIBLE);
             }
-
-        }
     };
 
-    String dateStr =" ";
-
-    CalendarView.OnDateChangeListener calendarListener = new CalendarView.OnDateChangeListener() {
+    View.OnLongClickListener textListener = new View.OnLongClickListener() {
         @Override
-        public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-            dateStr = year + "년" + (month+1) + "월" + dayOfMonth + "일";
+        public boolean onLongClick(View v) {
+            chrono.stop();
+            chrono.setTextColor(Color.BLUE);
+            textResult.setText(datePick.getYear()+"년"+(datePick.getMonth()+1)+"월"+
+                    (datePick.getDayOfMonth()+1)+"일"+timePicker.getCurrentHour()+"시"+timePicker.getCurrentMinute()+"분");
+
+            radioDate.setVisibility(View.INVISIBLE);
+            radioTime.setVisibility(View.INVISIBLE);
+            timePicker.setVisibility(View.INVISIBLE);
+            datePick.setVisibility(View.INVISIBLE);
+            return false;
         }
     };
+
+
 }
